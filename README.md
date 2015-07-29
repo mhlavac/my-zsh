@@ -9,5 +9,5 @@ first attempt with not default distro shell is zsh.
 
 ``` sh
 sudo apt-get install wget && \
-wget -qO- https://github.com/mhlavac/my-zsh/blob/master/install.sh | sh
+wget -qO- https://raw.githubusercontent.com/mhlavac/my-zsh/master/install.sh | sh
 ```
