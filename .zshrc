@@ -35,11 +35,12 @@ zle-line-init() {
 }
 zle -N zle-line-init
 
-git_commit_and_push() {
-    git commit -m $1 && git push
+# My aliases
+gcp() {
+    message=`printf '%q ' $@`
+    git commit -m "$message" && git push
 }
 
-# My aliases
 alias docker-ubuntu='docker run -i -t ubuntu:15.10 /bin/bash'
 alias docker-php='docker run -i -t php:7-cli php'
 alias l="ls -lah"
@@ -50,4 +51,3 @@ alias gc='git commit -v'
 alias gca='git commit -v -a'
 alias gb='git branch -v'
 alias st='git status -sb'
-alias gcp='git_commit_and_push'
