@@ -1,9 +1,16 @@
 #!/bin/sh
 
-cp -r .zsh ~/.zsh && \
+# Install dependencies
 sudo apt-get -y install zsh curl git wget && \
-curl -L https://raw.githubusercontent.com/zsh-users/antigen/master/antigen.zsh > antigen.zsh && \
+
+# Install antigen
 sudo cp antigen.zsh /opt && \
+
+# Install my packages
 cp .zshrc ~/.zshrc && \
+mkdir -p ~/.zsh && cp -r .zsh/* ~/.zsh && \
+cd git_fresh && sudo ./install && cd ../ && \
+
+# Set default shell to zsh
 chsh -s /bin/zsh && \
 zsh
