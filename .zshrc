@@ -13,7 +13,6 @@ antigen bundle ubuntu
 antigen bundle npm
 antigen bundle command-not-found
 antigen bundle ubuntu
-antigen bundle atom
 antigen bundle bgnotify
 antigen bundle docker
 antigen bundle screen
