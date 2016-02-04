@@ -27,7 +27,7 @@ antigen bundle composer
 antigen bundle symfony2
 
 # Theme
-antigen theme risto
+antigen theme anogster ~/.zsh/theme/anogster.zsh-theme
 
 zle-line-init() {
     zle autosuggest-start
