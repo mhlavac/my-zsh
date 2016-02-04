@@ -8,6 +8,7 @@ first attempt with not default distro shell is zsh.
 # How to install
 
 ``` sh
-sudo apt-get install wget && \
-wget -qO- https://raw.githubusercontent.com/mhlavac/my-zsh/master/install.sh | sh
+git clone git@github.com:mhlavac/my-zsh.git && \
+cd my-zsh && \
+./install.sh
 ```
