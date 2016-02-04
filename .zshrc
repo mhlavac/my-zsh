@@ -35,8 +35,8 @@ zle-line-init() {
 zle -N zle-line-init
 
 # My aliases
-gcp() {
-#    message=`printf '%q ' $@`
+git_commit_and_push() {
+    message=`printf '%q ' $@`
     git commit -m "$message" && git push
 }
 
@@ -49,4 +49,5 @@ alias gd='git diff'
 alias gc='git commit -v'
 alias gca='git commit -v -a'
 alias gb='git branch -v'
-alias st='git status -sb'
+alias st='git status'
+alias gcp=git_commit_and_push
