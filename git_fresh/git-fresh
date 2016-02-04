@@ -1,0 +1,187 @@
+#!/usr/bin/env bash
+
+# git-fresh
+# https://github.com/imsky/git-fresh
+# By Ivan Malopinsky - http://imsky.co
+# MIT License
+
+usage () {
+cat << EOD
+Usage: git fresh [-fmrF] [-sl] [remote] [root]
+By default, git-fresh will:
+ - rebase against remote current branch 
+ - stash changes
+ - prune remote branches
+
+-f: Delete stale local and remote branches
+-m: Merge remote root into current branch
+-r: Rebase current branch against remote root
+-F: Reset local root to remote root, wipe workspace
+
+-s: Apply stashed changes after run
+-l: Only delete local stale branches
+
+remote: remote name, origin by default
+root: root branch, master by default
+EOD
+
+exit 0
+}
+
+say () {
+  echo "[git-fresh] $@" 1>&2
+}
+
+die () {
+  say $@
+  exit 1
+}
+
+error () {
+  die "error on line $1"
+}
+
+trap 'error $LINENO' ERR
+
+while getopts ":fmrslF" opt; do
+  case $opt in
+    f)
+      FORCE_DELETE_STALE=true
+      ;;
+    m)
+      MERGE=true
+      ;;
+    r)
+      REBASE=true
+      ;;
+    s)
+      APPLY_STASH=true
+      ;;
+    l)
+      DELETE_ONLY_LOCAL=true
+      ;;
+    F)
+      FORCE_LOCAL_RESET=true
+      ;;
+    *)
+      usage
+      break
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+# Are we inside a git repository?
+
+INSIDE_GIT_REPO=$(git rev-parse --is-inside-work-tree 2> /dev/null)
+
+if [[ -z "$INSIDE_GIT_REPO" ]]; then
+  die "Not a git repository"
+fi
+
+# Are we in a non-empty git repository?
+
+TOP_LEVEL_DIRECTORY=$(git rev-parse --show-toplevel)
+
+[[ $(ls -l "$TOP_LEVEL_DIRECTORY/.git/refs/heads" | wc -l) -eq "1" ]] && die "No HEAD ref available"
+
+CURRENT=$(git rev-parse --abbrev-ref HEAD)
+REMOTE=${1:-origin}
+ROOT=${2:-master}
+
+# Update remotes and prune stale remotes
+
+git remote update
+git remote prune $REMOTE
+
+STASH_STAMP=git-fresh-$(date +%s)
+
+# Stash changed files
+
+if ! git diff-files --quiet; then
+  git stash save $STASH_STAMP
+fi
+
+# If the current branch exists on the remote, rebase against it
+
+REMOTE_CURRENT=$(git ls-remote $REMOTE --heads 2> /dev/null | grep "heads/$CURRENT$" | cat)
+
+if [[ ! -z "$REMOTE_CURRENT" ]]; then
+  git rebase $REMOTE $CURRENT
+fi
+
+# Switch to root branch (master)
+
+git checkout $ROOT > /dev/null 2>&1
+
+if [[ "$FORCE_LOCAL_RESET" = true ]]; then
+  git clean -dfx
+  git reset --hard $REMOTE/$ROOT
+else
+  git rebase -q $REMOTE/$ROOT
+fi
+
+# Compute stale branches
+
+SMART_STALE=$(git branch -a --merged | tr -d "\* " | grep -Ev ">|$ROOT" | cat)
+
+LOCAL_STALE=$(grep -Ev "^remotes/" <<< "$SMART_STALE" | cat)
+REMOTE_STALE=$(grep -E "^remotes/" <<< "$SMART_STALE" | cat)
+#todo: add flag to prune all remote branches
+REMOTE_STALE=$(grep "^remotes/$REMOTE" <<< "$REMOTE_STALE" | cat)
+REMOTE_STALE=${REMOTE_STALE//remotes\/$REMOTE\/}
+
+if [[ ! -z "${SMART_STALE// }" ]]; then
+  if [[ ! -z "${LOCAL_STALE// }" ]]; then
+    STALE_BRANCHES=true
+    if [[ "$FORCE_DELETE_STALE" = true ]]; then
+      echo -n $LOCAL_STALE | xargs git branch -d 2> /dev/null
+    else
+      say "Local stale branches found:" $(echo -n $LOCAL_STALE | tr "\n" " ")
+    fi
+  fi
+
+  if [[ ! -z "${REMOTE_STALE// }" ]]; then
+    STALE_BRANCHES=true
+    if [[ "$FORCE_DELETE_STALE" = true ]]; then
+      if [[ "$DELETE_ONLY_LOCAL" != true ]]; then
+        echo -n $REMOTE_STALE | xargs git push $REMOTE --delete
+      fi
+    else
+      say "Remote stale branches found:" $(echo -n $REMOTE_STALE | tr "\n" " ")
+    fi
+  fi
+
+  if [[ "$FORCE_DELETE_STALE" != true && "$STALE_BRANCHES" = true ]]; then
+    say "Delete stale branches with: git fresh -f"
+  fi
+fi
+
+if [[ ! -z $(git rev-parse --verify --quiet "$CURRENT") ]]; then
+  git checkout $CURRENT 2> /dev/null
+
+  if [ "$REBASE" = true ] && [ "$MERGE" = true ]; then
+    say "Rebase and merge enabled, skipping both"
+  else
+    if [[ "$REBASE" = true ]]; then
+      git rebase $REMOTE/$ROOT
+    fi
+
+    if [[ "$MERGE" = true ]]; then
+      git merge --no-edit $REMOTE/$ROOT
+    fi
+  fi
+else
+  echo "$CURRENT branch was stale, staying on $ROOT"
+fi
+
+if [[ ! -z $(git stash list | grep $STASH_STAMP | cat) ]]; then
+  if [[ "$APPLY_STASH" = true ]]; then
+    git stash pop
+  else
+    say "Stashed changes present, apply with: git stash pop"
+  fi
+fi
+
+git gc --auto --prune=now
