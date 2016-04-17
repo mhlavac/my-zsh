@@ -8,7 +8,6 @@ antigen bundle zsh-users/zsh-completions src
 antigen bundle zsh-users/zsh-syntax-highlighting
 antigen-bundle zsh-users/zsh-history-substring-search
 
-antigen bundle ssh-agent
 antigen bundle ubuntu
 antigen bundle npm
 antigen bundle command-not-found
