@@ -10,6 +10,7 @@ sudo cp antigen.zsh /opt && \
 cp .zshrc ~/.zshrc && \
 mkdir -p ~/.zsh && cp -r .zsh/* ~/.zsh && \
 cd git_fresh && sudo ./install && cd ../ && \
+git clone git://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions && \
 
 # Set default shell to zsh
 chsh -s /bin/zsh && \
