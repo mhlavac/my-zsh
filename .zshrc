@@ -8,18 +8,16 @@ antigen bundle zsh-users/zsh-completions src
 antigen bundle zsh-users/zsh-syntax-highlighting
 antigen-bundle zsh-users/zsh-history-substring-search
 
-antigen bundle ubuntu
-antigen bundle npm
-antigen bundle command-not-found
-antigen bundle ubuntu
 antigen bundle bgnotify
+antigen bundle command-not-found
 antigen bundle docker
+antigen bundle npm
 antigen bundle screen
-antigen bundle ssh-agent
 antigen bundle sudo
+antigen bundle ubuntu
+antigen bundle ubuntu
 antigen bundle vagrant
 antigen bundle web-search
-antigen bundle tarruda/zsh-autosuggestions
 
 # PHP related
 antigen bundle composer
@@ -27,6 +25,8 @@ antigen bundle symfony2
 
 # Theme
 antigen theme mhlavac/my-zsh .zsh/theme/mhlavac
+
+antigen-bundle zsh-users/zsh-autosuggestions
 
 zle-line-init() {
     zle autosuggest-start
