@@ -1,4 +1,5 @@
 source /opt/antigen.zsh
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 antigen use oh-my-zsh
 
@@ -25,13 +26,6 @@ antigen bundle symfony2
 
 # Theme
 antigen theme mhlavac/my-zsh .zsh/theme/mhlavac
-
-antigen-bundle zsh-users/zsh-autosuggestions
-
-zle-line-init() {
-    zle autosuggest-start
-}
-zle -N zle-line-init
 
 # My aliases
 git_commit_and_push() {
