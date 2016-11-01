@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # Install dependencies
+sudo apt-get update
 sudo apt-get -y install zsh curl git wget && \
 
 # Install antigen
