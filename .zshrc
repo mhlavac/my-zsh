@@ -28,13 +28,9 @@ antigen bundle symfony2
 antigen theme mhlavac/my-zsh .zsh/theme/mhlavac
 
 # My aliases
-git_commit_and_push() {
-    message=`printf '%q ' $@`
-    git commit -m "$message" && git push
-}
-
-alias docker-ubuntu='docker run -i -t ubuntu:15.10 /bin/bash'
+alias docker-ubuntu='docker run -i -t ubuntu:16.04 /bin/bash'
 alias docker-php='docker run -i -t php:7-cli php'
+alias docker-clean='docker stop $(docker ps -a -q) && docker rm -f $(docker ps -a -q) && docker rmi -f $(docker images -q)'
 alias l="ls -lah"
 alias gl='git pull'
 alias gp='git push'
@@ -43,4 +39,10 @@ alias gc='git commit -v'
 alias gca='git commit -v -a'
 alias gb='git branch -v'
 alias st='git status'
-alias gcp=git_commit_and_push
+alias symfony='app/console'
+
+# Weather alias
+weather() {
+    curl wttr.in/$1
+}
+alias weather=weather
