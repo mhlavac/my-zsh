@@ -8,7 +8,7 @@ first attempt with not default distro shell is zsh.
 # How to install
 
 ``` sh
-git clone git@github.com:mhlavac/my-zsh.git && \
-cd my-zsh && \
+git clone git@github.com:mhlavac/my-zsh.git ~/.my-zsh && \
+cd ~/.my-zsh && \
 ./install.sh
 ```
