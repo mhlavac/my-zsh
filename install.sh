@@ -14,6 +14,4 @@ cd git_fresh && sudo ./install && cd ../ && \
 git clone git://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions && \
 
 # Set default shell to zsh
-/bin/zsh ~/.zshrc
-sudo chsh -s /bin/zsh $USER && \
-zsh
+sudo chsh -s /bin/zsh $USER
